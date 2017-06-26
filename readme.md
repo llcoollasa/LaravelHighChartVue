@@ -42,8 +42,15 @@ Unit Tests
     vendor/phpunit/phpunit/phpunit  --filter=testReportTest
 
 
-**Notes**
+**Special Notes**
 
-- Test Cases can be found in tests/Feature/ExampleTest.php
+- Test Cases can be found in tests/
 - web.php contains the routes
 - Please create a user and log in to see the report
+
+**Steps**
+1. Click register and register for a user
+2. Go to homepage & click "RETENTION CURVES"
+3. Click On View Report
+
+Cheers.
