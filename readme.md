@@ -3,7 +3,7 @@
 **Implementation steps**
 
 Clone the repository
-    git clone git@bitbucket.org:llcoollasa/temper.work.git
+    git clone git@github.com:llcoollasa/LaravelHighChartVue.git
 
 Run Composer
     
