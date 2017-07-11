@@ -40,6 +40,7 @@ Unit Tests
 
     vendor/phpunit/phpunit/phpunit  --filter=testGetReportOne
     vendor/phpunit/phpunit/phpunit  --filter=testReportTest
+    vendor/phpunit/phpunit/phpunit  --filter=testCalculateYPercentage
 
 
 **Special Notes**
