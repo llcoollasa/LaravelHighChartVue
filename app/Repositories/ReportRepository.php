@@ -53,40 +53,59 @@ class ReportRepository implements ReportInterface
     public function getReportOne()
     {
         $result = \DB::select('
-                    SELECT
-                        A.WK,
-                        A.Xper,
-                        ROUND((A.count / B.count) * 100) Yper
-                    FROM
-                        (SELECT
-                                WEEK(created_at) AS WK,
-                                COUNT(*) AS count,
-                                ROUND(SUM(onboarding_percentage) / COUNT(*)) Xper
-                        FROM
-                            reports
-                        GROUP BY WEEK(created_at), onboarding_percentage) A
-                            LEFT JOIN
-                        (SELECT
-                            WEEK(created_at) AS WK, COUNT(*) AS count
-                        FROM
-                            reports
-                        GROUP BY WEEK(created_at)) B
-                        ON A.WK = B.WK
-                    ORDER BY A.wk , A.Xper');
+                                SELECT
+                                            A.WK,
+                                            A.Xper, A.count ,B.count AS TOTAL
+                                        FROM
+                                            (SELECT
+                                                    WEEK(created_at) AS WK,
+                                                    COUNT(*) AS count,
+                                                    ROUND(SUM(onboarding_percentage) / COUNT(*)) Xper
+                                            FROM
+                                                reports
+                                            GROUP BY WEEK(created_at), onboarding_percentage) A
+                                                LEFT JOIN
+                                            (SELECT
+                                                WEEK(created_at) AS WK, COUNT(*) AS count
+                                            FROM
+                                                reports
+                                            GROUP BY WEEK(created_at)) B
+                                            ON A.WK = B.WK
+                                        ORDER BY A.wk , A.Xper');
 
         $dataSet = [];
 
         $week =0;
+        $remainingCandidates = 0;
 
-        foreach($result as $record){
 
-            if($week != $record->WK){
-                $week = $record->WK;
-                $dataSet[$record->WK]['data'][]=[0, 100];
+        foreach ($result as $record) {
+
+            $total = $record->TOTAL;
+            $yPer = 100;
+            $dataSet[$record->WK]['name']   = 'WEEK ' . $record->WK;
+            $dataSet[$record->WK]['total']  = $total;
+
+            if ($week != $record->WK){
+
+                $week                           = $record->WK;
+                $dataSet[$record->WK]['data'][] = [0, $yPer];
+
             }
 
-            $dataSet[$record->WK]['name']= 'WEEK '.$record->WK;
-            $dataSet[$record->WK]['data'][]=[$record->Xper, $record->Yper];
+            if($remainingCandidates ==0) {
+
+                $remainingCandidates = $total;
+
+            }
+
+            //calculate Y percentage
+            $remainingCandidates -= $record->count;
+
+            $yPer =round(($remainingCandidates / $total) * 100);
+
+            $dataSet[$record->WK]['data'][] = [$record->Xper, $yPer];
+
         }
 
         return $this->prepareReport($dataSet);
